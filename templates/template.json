@@ -1,0 +1,48 @@
+{
+    "apiVersion": "vlabs",
+    "properties": {
+        "orchestratorProfile": {
+            "orchestratorType": "Kubernetes",
+            "orchestratorRelease": "$VERSION"
+        },
+        "masterProfile": {
+            "count": 1,
+            "dnsPrefix": "$DNS_PREFIX",
+            "vmSize": "$MASTER_SIZE"
+        },
+        "agentPoolProfiles": [
+            {
+                "name": "linuxpool1",
+                "count": $LINUX_WORKER_COUNT,
+                "vmSize": "$LINUX_WORKER_SIZE",
+                "storageProfile" : "ManagedDisks",
+                "availabilityProfile": "AvailabilitySet"
+            },
+            {
+                "name": "windowspool1",
+                "count": $WINDOWS_WORKER_COUNT,
+                "vmSize": "$WINDOWS_WORKER_SIZE",
+                "availabilityProfile": "AvailabilitySet",
+                "osType": "Windows"
+            }
+        ],
+        "windowsProfile": {
+            "adminUsername": "$WINDOWS_ADMIN_USER",
+            "adminPassword": "$WINDOWS_ADMIN_PASSWORD"
+        },
+        "linuxProfile": {
+            "adminUsername": "$LINUX_ADMIN_USER",
+            "ssh": {
+                "publicKeys": [
+                    {
+                        "keyData": "$LINUX_KEY_DATA"
+                    }
+                ]
+            }
+        },
+        "servicePrincipalProfile": {
+            "clientId": "$AZ_CLIENT_ID",
+            "secret": "$AZ_SECRET"
+        }
+    }
+}
