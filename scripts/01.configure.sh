@@ -1,5 +1,11 @@
-# login
+#!/bin/bash
+
 az account show &> /dev/null || az login
+
+# check if we are logged in
+az account show &> /dev/null ||
+    ( echo "You need to login first, run 'az login' or supply log-in credentials for a RBAC service account" && exit 1)
+
 
 # there are several subscriptions, select the right one
 if [ `az account list --query='length([])'` -gt 1 ]; then
@@ -19,12 +25,12 @@ fi
 
 # Create a service account for the cluster - only has access to the resource group
 # The cluster needs this account to be able to create public IPs for Load balancers, or storage for volumes
-if [ ! -e ~/.azure/k8s.account.json ]; then    
+if [ ! -e /root/.azure/k8s.account.json ]; then    
     SUBSCRIPTION_ID=`az account show --query 'id' -o tsv`
-    az ad sp create-for-rbac --name http://${RESOURCE_GROUP}_access --scopes "/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP}" > ~/.azure/k8s.account.json    
+    az ad sp create-for-rbac --name http://${RESOURCE_GROUP}_k8s --scopes "/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP}" > /root/.azure/k8s.account.json
 fi
 
 # Create a key for the linux machines. You can then login to the master node doing ssh
-if [ ! -e ~/.ssh/id_rsa ]; then
-    ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa
+if [ ! -e /root/.ssh/id_rsa ]; then
+    ssh-keygen -t rsa -b 4096 -N "" -f /root/.ssh/id_rsa
 fi

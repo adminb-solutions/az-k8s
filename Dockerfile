@@ -1,6 +1,6 @@
 FROM microsoft/azure-cli:latest
 
-RUN apk update && apk add gettext
+RUN apk update && apk add gettext run-parts
 
 # install acs-engine
 RUN curl -L  https://github.com/Azure/acs-engine/releases/download/v0.25.3/acs-engine-v0.25.3-linux-amd64.tar.gz | tar -xvz && \
@@ -35,3 +35,5 @@ WORKDIR /root
 
 COPY scripts scripts
 COPY templates templates
+
+CMD ["/usr/bin/run-parts", "--exit-on-error","--regex","\\d.*","/root/scripts"]

@@ -1,8 +1,10 @@
+#!/bin/bash
+
 # Provide a different network group for the DNS config, otherwise use the default
 network_group=${1:-${NETWORK_RESOURCE_GROUP:-$RESOURCE_GROUP}}
 email=${2:-${USER_EMAIL:-'john@doe.com'}}
-zone_account_path=~/.azure/k8s.dns.$network_group.account.json
-zone_info_path=~/.azure/k8s.dns.$network_group.info.json
+zone_account_path="/root/.azure/k8s.dns.$network_group.account.json"
+zone_info_path="/root/.azure/k8s.dns.$network_group.info.json"
 
 export KUBECONFIG="${PWD}/_output/${DNS_PREFIX}/kubeconfig/kubeconfig.${LOCATION}.json"
 
@@ -30,9 +32,8 @@ if [ ! -e $zone_account_path ]; then
     else # there is only one network
         az network dns zone list -g $network_group --query='[0].{id:id,name:name}' > $zone_info_path
     fi
-    zone_id=`jq -r .Id $zone_info_path`
-    SUBSCRIPTION_ID=`az account show --query 'id' -o tsv`        
-    az ad sp create-for-rbac --name http://${network_group}_${RESOURCE_GROUP}_access --scopes "$zone_id" > $zone_account_path
+    zone_id=`jq -r .id $zone_info_path`
+    az ad sp create-for-rbac --name http://${network_group}_${RESOURCE_GROUP}_k8s --scopes "$zone_id" > $zone_account_path
 fi
 
 # create secret with azure password
@@ -40,7 +41,7 @@ fi
 # create issuer
 
 export AZ_CLIENT_ID=`jq -r .appId $zone_account_path`
-export AZ_RESOURCE_GROUP=$network_group
+export AZ_RESOURCE_GROUP=$network_group    
 export AZ_SUBSCRIPTION_ID=`az account show --query 'id' -o tsv`
 export AZ_TENANT_ID=`jq -r .tenant $zone_account_path`
 export AZ_HOSTNAME=`jq -r .name $zone_info_path`

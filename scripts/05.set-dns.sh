@@ -1,6 +1,8 @@
+#!/bin/bash
+
 network_group=${1:-${NETWORK_RESOURCE_GROUP:-$RESOURCE_GROUP}}
 host=${2:-'*'}
-zone_info_path=~/.azure/k8s.dns.$network_group.info.json
+zone_info_path=/root/.azure/k8s.dns.$network_group.info.json
 domain=`jq -r .name $zone_info_path`
 
 export KUBECONFIG="${PWD}/_output/${DNS_PREFIX}/kubeconfig/kubeconfig.${LOCATION}.json"
