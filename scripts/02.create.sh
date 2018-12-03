@@ -19,3 +19,5 @@ echo "kubectl configured using $KUBECONFIG file"
 kubectl version
 
 [ -d /output ] && cp $KUBECONFIG /output
+
+exit 0 #Required as if the previous check for /output fails it returns a 1
