@@ -33,7 +33,9 @@ if [ ! -e $zone_account_path ]; then
         az network dns zone list -g $network_group --query='[0].{id:id,name:name}' > $zone_info_path
     fi
     zone_id=`jq -r .id $zone_info_path`
-    az ad sp create-for-rbac --name http://${network_group}_${RESOURCE_GROUP}_k8s --scopes "$zone_id" > $zone_account_path
+    rbac_name="http://${network_group}_${RESOURCE_GROUP}_k8s"
+    az ad sp delete --id $rbac_name
+    az ad sp create-for-rbac --name $rbac_name --scopes "$zone_id" > $zone_account_path
 fi
 
 # create secret with azure password
