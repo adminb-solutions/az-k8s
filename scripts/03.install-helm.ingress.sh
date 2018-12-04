@@ -4,7 +4,8 @@ export KUBECONFIG="${PWD}/_output/${DNS_PREFIX}/kubeconfig/kubeconfig.${LOCATION
 
 helm init --upgrade --node-selectors "beta.kubernetes.io/os"="linux"
 
-while [ ! helm version &> /dev/null ]; do
+
+while ! helm version &> /dev/null ; do
     sleep 1s
 done
 
