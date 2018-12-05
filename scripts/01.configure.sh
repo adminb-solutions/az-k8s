@@ -33,6 +33,8 @@ if [ ! -e /root/.azure/k8s.account.json ]; then
 fi
 
 # Create a key for the linux machines. You can then login to the master node doing ssh
-if [ ! -e /root/.ssh/id_rsa ]; then
-    ssh-keygen -t rsa -b 4096 -N "" -f /root/.ssh/id_rsa
+if [ ! -e /root/.azure/id_rsa ]; then
+    ssh-keygen -t rsa -b 4096 -N "" -f /root/.azure/id_rsa    
 fi
+mkdir -p /root/.ssh
+cp /root/.azure/id_rsa* /root/.ssh

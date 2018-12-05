@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export LINUX_KEY_DATA=`cat /root/.ssh/id_rsa.pub`
+export LINUX_KEY_DATA=`cat /root/.azure/id_rsa.pub`
 export AZ_SECRET=`jq .password -r /root/.azure/k8s.account.json`
 export AZ_TENANT=`jq .tenant -r /root/.azure/k8s.account.json`
 export AZ_CLIENT_ID=`jq .appId -r /root/.azure/k8s.account.json`

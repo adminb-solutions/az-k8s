@@ -36,4 +36,6 @@ WORKDIR /root
 COPY scripts scripts
 COPY templates templates
 
+VOLUME [ "/output" ]
+
 CMD ["/usr/bin/run-parts", "--exit-on-error","--regex","\\d.*","/root/scripts"]

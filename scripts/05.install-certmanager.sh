@@ -6,7 +6,7 @@ email=${2:-${USER_EMAIL:-'john@doe.com'}}
 zone_account_path="/root/.azure/k8s.dns.$network_group.account.json"
 zone_info_path="/root/.azure/k8s.dns.$network_group.info.json"
 
-export KUBECONFIG="${PWD}/_output/${DNS_PREFIX}/kubeconfig/kubeconfig.${LOCATION}.json"
+export KUBECONFIG="/output/kubeconfig.${LOCATION}.json"
 
 # taint the windows node to avoid linux containers landing on it
 # known issue with cert-manager

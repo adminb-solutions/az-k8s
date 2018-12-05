@@ -5,8 +5,7 @@ host=${2:-'*'}
 zone_info_path=/root/.azure/k8s.dns.$network_group.info.json
 domain=`jq -r .name $zone_info_path`
 
-export KUBECONFIG="${PWD}/_output/${DNS_PREFIX}/kubeconfig/kubeconfig.${LOCATION}.json"
-
+export KUBECONFIG="/output/kubeconfig.${LOCATION}.json"
 
 while ! ip=`kubectl get svc --namespace ingress -l 'component=controller' -o json | jq -r .items[0].status.loadBalancer.ingress[].ip 2> /dev/null`  ; do
     sleep 1s
