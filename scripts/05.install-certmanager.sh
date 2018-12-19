@@ -41,7 +41,6 @@ fi
 
 # create secret with azure password
 
-# create issuer
 
 export AZ_CLIENT_ID=`jq -r .appId $zone_account_path`
 export AZ_RESOURCE_GROUP=$network_group    
@@ -49,6 +48,8 @@ export AZ_SUBSCRIPTION_ID=`az account show --query 'id' -o tsv`
 export AZ_TENANT_ID=`jq -r .tenant $zone_account_path`
 export AZ_HOSTNAME=`jq -r .name $zone_info_path`
 export EMAIL="$email"
+export ACME_SERVER='https://acme-staging-v02.api.letsencrypt.org/directory'
+export ISSUER_NAME='letsencrypt-staging'
 
 password=`jq -r .password $zone_account_path`
 
@@ -57,4 +58,11 @@ while ! kubectl create secret generic azure-secret --from-literal="password=$pas
     kubectl delete secret azure-secret
 done
 
-envsubst < templates/issuer.staging.yml | kubectl apply -f -
+# create issuer for staging
+envsubst < templates/issuer.yml | kubectl apply -f -
+
+# create issuer for production
+export ACME_SERVER='https://acme-v02.api.letsencrypt.org/directory'
+export ISSUER_NAME='letsencrypt-production'
+
+envsubst < templates/issuer.yml | kubectl apply -f -

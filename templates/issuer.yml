@@ -1,11 +1,11 @@
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Issuer
 metadata:
-  name: letsencrypt-staging
+  name: $ISSUER_NAME
 spec:
   acme:
     # The ACME server URL
-    server: https://acme-staging-v02.api.letsencrypt.org/directory    
+    server: $ACME_SERVER    
     # Email address used for ACME registration
     email: $EMAIL
     # Name of a secret used to store the ACME account private key
