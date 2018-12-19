@@ -3,7 +3,20 @@
     "properties": {
         "orchestratorProfile": {
             "orchestratorType": "Kubernetes",
-            "orchestratorRelease": "$VERSION"
+            "orchestratorRelease": "$VERSION",
+            "kubernetesConfig": {
+                "useManagedIdentity": true,
+                "addons":[
+                    {
+                        "name": "cluster-autoscaler",
+                        "enabled": $AUTOSCALE,
+                        "config": {
+                            "minNodes": "$AUTOSCALE_MIN",
+                            "maxNodes": "$AUTOSCALE_MAX"
+                        }
+                    }
+                ]
+            }
         },
         "masterProfile": {
             "count": 1,
@@ -16,13 +29,13 @@
                 "count": $LINUX_WORKER_COUNT,
                 "vmSize": "$LINUX_WORKER_SIZE",
                 "storageProfile" : "ManagedDisks",
-                "availabilityProfile": "AvailabilitySet"
+                "availabilityProfile": "VirtualMachineScaleSets"
             },
             {
                 "name": "windowspool1",
                 "count": $WINDOWS_WORKER_COUNT,
                 "vmSize": "$WINDOWS_WORKER_SIZE",
-                "availabilityProfile": "AvailabilitySet",
+                "availabilityProfile": "VirtualMachineScaleSets",
                 "osType": "Windows"
             }
         ],
