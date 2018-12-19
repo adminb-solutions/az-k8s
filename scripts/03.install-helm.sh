@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export KUBECONFIG="/output/kubeconfig.${LOCATION}.json"
+source /etc/environment
 
 helm init --upgrade --node-selectors "beta.kubernetes.io/os"="linux"
 

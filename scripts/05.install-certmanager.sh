@@ -6,7 +6,8 @@ email=${2:-${USER_EMAIL:-'john@doe.com'}}
 zone_account_path="/root/.azure/k8s.dns.$network_group.account.json"
 zone_info_path="/root/.azure/k8s.dns.$network_group.info.json"
 
-export KUBECONFIG="/output/kubeconfig.${LOCATION}.json"
+source /etc/environment
+
 
 # taint the windows node to avoid linux containers landing on it
 # known issue with cert-manager
@@ -14,8 +15,8 @@ kubectl taint node -l beta.kubernetes.io/os=windows windows=true:NoSchedule 2> /
 
 echo "Using DNS zone in resource group $network_group"
 
-# install cert-manager
-[ -z `helm list cert-manager -q` ] && helm install stable/cert-manager --namespace kube-system --name cert-manager --set nodeSelector."beta\.kubernetes\.io/os"="linux"
+# install or upgrade cert-manager
+helm upgrade cert-manager --install --namespace kube-system --set nodeSelector."beta\.kubernetes\.io/os"="linux" stable/cert-manager
 
 # create a service account to access the DNS az zone
 

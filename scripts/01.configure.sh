@@ -25,11 +25,10 @@ fi
 
 # Create a service account for the cluster - only has access to the resource group
 # The cluster needs this account to be able to create public IPs for Load balancers, or storage for volumes
-if [ ! -e /root/.azure/k8s.account.json ]; then    
+if [ ! -e /root/.azure/k8s.${RESOURCE_GROUP}.account.json ]; then    
     SUBSCRIPTION_ID=`az account show --query 'id' -o tsv`
     ACCOUNT_ID=http://${RESOURCE_GROUP}_k8s
-    az ad sp delete --id $ACCOUNT_ID &> /dev/null #delete in case it exists
-    az ad sp create-for-rbac --name $ACCOUNT_ID --scopes "/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP}" > /root/.azure/k8s.account.json
+    az ad sp create-for-rbac --name $ACCOUNT_ID --scopes "/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP}" > /root/.azure/k8s.${RESOURCE_GROUP}.account.json
 fi
 
 # Create a key for the linux machines. You can then login to the master node doing ssh
