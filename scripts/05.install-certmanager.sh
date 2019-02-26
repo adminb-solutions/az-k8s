@@ -16,7 +16,8 @@ kubectl taint node -l beta.kubernetes.io/os=windows windows=true:NoSchedule 2> /
 echo "Using DNS zone in resource group $network_group"
 
 # install or upgrade cert-manager
-helm upgrade cert-manager --install --namespace kube-system --set nodeSelector."beta\.kubernetes\.io/os"="linux" stable/cert-manager
+# NOTE hardcoding it to v.0.5.2 because of https://github.com/jetstack/cert-manager/issues/1255
+helm upgrade cert-manager --install --namespace kube-system --set nodeSelector."beta\.kubernetes\.io/os"="linux" --version v0.5.2 stable/cert-manager
 
 # create a service account to access the DNS az zone
 
@@ -24,12 +25,12 @@ if [ ! -e $zone_account_path ]; then
     dns_zone_count=`az network dns zone list -g $network_group --query='length([])' -o tsv`
 
     if [ $dns_zone_count -eq 0 ]; then
-        echo "Cannot find any zones in $network_group"
-        exit 1
+        echo "Warning - Cannot find any zones in $network_group. You will need to create your own cert-issuer to use the certmanager"
+        exit 0
     elif [ $dns_zone_count -gt 1 ]; then
         az network dns zone list -g $network_group --query='[].{Host:name}' -o table
         read "Choose a host: " hostname
-        az network dns zone show -n $hostname -g $network_group --query='[].{Id:id,Name:name}' > $zone_info_path    
+        az network dns zone show -n $hostname -g $network_group --query='[].{Id:id,Name:name}' > $zone_info_path
     else # there is only one network
         az network dns zone list -g $network_group --query='[0].{id:id,name:name}' > $zone_info_path
     fi
@@ -43,7 +44,7 @@ fi
 
 
 export AZ_CLIENT_ID=`jq -r .appId $zone_account_path`
-export AZ_RESOURCE_GROUP=$network_group    
+export AZ_RESOURCE_GROUP=$network_group
 export AZ_SUBSCRIPTION_ID=`az account show --query 'id' -o tsv`
 export AZ_TENANT_ID=`jq -r .tenant $zone_account_path`
 export AZ_HOSTNAME=`jq -r .name $zone_info_path`
